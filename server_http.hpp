@@ -453,7 +453,7 @@ namespace SimpleWeb {
             try {
               content_length = stoull(it->second);
             }
-            catch(const std::exception &e) {
+            catch(const std::exception&) {
               if(this->on_error)
                 this->on_error(session->request, make_error_code::make_error_code(errc::protocol_error));
               return;
@@ -499,9 +499,9 @@ namespace SimpleWeb {
           // remove connection from connections
           {
             std::unique_lock<std::mutex> lock(*connections_mutex);
-            auto it = connections->find(session->connection.get());
-            if(it != connections->end())
-              connections->erase(it);
+            auto itr = connections->find(session->connection.get());
+            if(itr != connections->end())
+              connections->erase(itr);
           }
 
           on_upgrade(session->connection->socket, session->request);
@@ -592,8 +592,12 @@ namespace SimpleWeb {
 
         if(!ec) {
           asio::ip::tcp::no_delay option(true);
-          error_code ec;
-          session->connection->socket->set_option(option, ec);
+          error_code ec_int; 
+          session->connection->socket->set_option(option, ec_int);
+
+		  if (ec_int) {
+			  throw std::exception(ec_int.message().c_str());
+		  }
 
           this->read_request_and_content(session);
         }
