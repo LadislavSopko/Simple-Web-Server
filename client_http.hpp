@@ -125,9 +125,12 @@ namespace SimpleWeb {
         auto self = this->shared_from_this();
         timer->async_wait([self](const error_code &ec) {
           if(!ec) {
-            error_code ec;
-            self->socket->lowest_layer().cancel(ec);
-          }
+            error_code ec_int;
+            self->socket->lowest_layer().cancel(ec_int);
+			if (ec_int) {
+				throw std::exception(ec_int.message().c_str());
+			}
+		  }
         });
       }
 
@@ -518,7 +521,7 @@ namespace SimpleWeb {
         }
         else {
           if(session->connection->attempt_reconnect && ec != asio::error::operation_aborted) {
-            std::unique_lock<std::mutex> lock(connections_mutex);
+            std::unique_lock<std::mutex> lock_int(connections_mutex);
             auto it = connections.find(session->connection);
             if(it != connections.end()) {
               connections.erase(it);
@@ -526,11 +529,11 @@ namespace SimpleWeb {
               session->connection->attempt_reconnect = false;
               session->connection->in_use = true;
               connections.emplace(session->connection);
-              lock.unlock();
+              lock_int.unlock();
               this->connect(session);
             }
             else {
-              lock.unlock();
+              lock_int.unlock();
               session->callback(session->connection, ec);
             }
           }
@@ -664,8 +667,11 @@ namespace SimpleWeb {
                 return;
               if(!ec) {
                 asio::ip::tcp::no_delay option(true);
-                error_code ec;
-                session->connection->socket->set_option(option, ec);
+                error_code ec_int;
+                session->connection->socket->set_option(option, ec_int);
+				if (ec_int) {
+					throw std::exception(ec_int.message().c_str());
+				}
                 this->write(session);
               }
               else
