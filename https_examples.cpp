@@ -229,10 +229,10 @@ int main() {
 
   // Synchronous request examples
   try {
-    auto r1 = client.request("GET", "/match/123");
+    auto r1 = client.request(std::string("GET"), std::string("/match/123"));
     cout << r1->content.rdbuf() << endl; // Alternatively, use the convenience function r1->content.string()
 
-    auto r2 = client.request("POST", "/string", json_string);
+    auto r2 = client.request(std::string("POST"), std::string("/string"), SimpleWeb::string_view(json_string.c_str(),json_string.length()));
     cout << r2->content.rdbuf() << endl;
   }
   catch(const SimpleWeb::system_error &e) {
