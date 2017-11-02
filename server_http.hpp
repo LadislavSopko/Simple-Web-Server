@@ -10,6 +10,7 @@
 #include <sstream>
 #include <thread>
 #include <unordered_set>
+#include <stdexcept>
 
 #ifdef USE_STANDALONE_ASIO
 #include <asio.hpp>
@@ -596,7 +597,7 @@ namespace SimpleWeb {
           session->connection->socket->set_option(option, ec_int);
 
 		  if (ec_int) {
-			  throw std::exception(ec_int.message().c_str());
+			  throw std::runtime_error(ec_int.message().c_str());
 		  }
 
           this->read_request_and_content(session);

@@ -254,6 +254,12 @@ find_package(OpenSSL)
 if(OPENSSL_FOUND)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENSSL")
     target_link_libraries(http_examples ${OPENSSL_LIBRARIES})
+
+	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+		    target_link_libraries(http_examples dl)
+	endif ()
+
+
     include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
 
     add_executable(https_examples https_examples.cpp)
@@ -261,6 +267,11 @@ if(OPENSSL_FOUND)
     target_link_libraries(https_examples ${OPENSSL_LIBRARIES})
     target_link_libraries(https_examples ${CMAKE_THREAD_LIBS_INIT})
 	apply_preprocessor_definitions (https_examples)
+
+	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+		    target_link_libraries(https_examples dl)
+	endif ()
+
 endif()
 
 if( "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows" )

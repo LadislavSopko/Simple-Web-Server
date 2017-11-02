@@ -7,6 +7,7 @@
 #include <random>
 #include <unordered_set>
 #include <vector>
+#include <stdexcept>
 
 #ifdef USE_STANDALONE_ASIO
 #include <asio.hpp>
@@ -128,7 +129,7 @@ namespace SimpleWeb {
             error_code ec_int;
             self->socket->lowest_layer().cancel(ec_int);
 			if (ec_int) {
-				throw std::exception(ec_int.message().c_str());
+				throw std::runtime_error(ec_int.message().c_str());
 			}
 		  }
         });
@@ -670,7 +671,7 @@ namespace SimpleWeb {
                 error_code ec_int;
                 session->connection->socket->set_option(option, ec_int);
 				if (ec_int) {
-					throw std::exception(ec_int.message().c_str());
+					throw std::runtime_error(ec_int.message().c_str());
 				}
                 this->write(session);
               }
