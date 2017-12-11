@@ -53,11 +53,29 @@ endif()
 
 # ---------- Find Boost Headers/Libraries -----------------------
 set (XW_BOOST_MAJOR_VERSION 1 )
-set (XW_BOOST_MINOR_VERSION 59)
-set (BOOST_ROOT ${CMAKE_INSTALL_PREFIX}/include/boost-1_59)
-set (XW_BOOST_VERSION "${XW_BOOST_MAJOR_VERSION}.${XW_BOOST_MINOR_VERSION}" ) 
-set (XW_BOOST_VERSION_FOR_FILE "${XW_BOOST_MAJOR_VERSION}_${XW_BOOST_MINOR_VERSION}" ) 
+set (XW_BOOST_MINOR_VERSION 65)
+set (XW_BOOST_PATCH_VERSION 1)
+set (XW_BOOST_VERSION "${XW_BOOST_MAJOR_VERSION}.${XW_BOOST_MINOR_VERSION}.${XW_BOOST_PATCH_VERSION}" ) 
+
+#set (XW_BOOST_VERSION "${XW_BOOST_MAJOR_VERSION}.${XW_BOOST_MINOR_VERSION}" ) 
+#set (XW_BOOST_VERSION_FOR_FILE "${XW_BOOST_MAJOR_VERSION}_${XW_BOOST_MINOR_VERSION}" ) 
+
+
 set(BOOST_COMPONENTS system thread filesystem date_time iostreams)
+
+#handle boost as part of local build system if not defined before
+if ("${BOOST_ROOT}" STREQUAL "") 
+    
+	if("${XW_BOOST_PATCH_VERSION}" STREQUAL "0") 
+		set (BOOST_ROOT ${XW_3RDP_ROOT}/include/boost-${XW_BOOST_MAJOR_VERSION}_${XW_BOOST_MINOR_VERSION})
+	else()
+		set (BOOST_ROOT ${XW_3RDP_ROOT}/include/boost-${XW_BOOST_MAJOR_VERSION}_${XW_BOOST_MINOR_VERSION}_${XW_BOOST_PATCH_VERSION})
+	endif()	
+	
+    set (BOOST_LIBRARYDIR ${XW_3RDP_ROOT}/lib)
+endif ()
+
+
 # Late 2017 TODO: remove the following checks and always use std::regex
 if(USE_BOOST_REGEX)
 		set(BOOST_COMPONENTS ${BOOST_COMPONENTS} regex)
